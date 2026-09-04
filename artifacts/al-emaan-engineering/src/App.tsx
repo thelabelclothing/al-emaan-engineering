@@ -37,6 +37,10 @@ import screwPumpView7 from '@assets/20260904_142333_1788514240511.png';
 import formworkView2 from '@assets/al_emaan_formwork_gallery_2_clean_clear_1788514756778.png';
 import formworkView3 from '@assets/al_emaan_formwork_application_4_clean_clear_1788514766702.png';
 import formworkView4 from '@assets/al_emaan_formwork_application_5_clean_clear_1788514766780.png';
+import liftingView2 from '@assets/lifting_gallery_2_clean_clear_1788515384105.png';
+import liftingView3 from '@assets/lifting_gallery_4_clean_clear_1788515384132.png';
+import liftingView4 from '@assets/lifting_picture_1_clear_1788515384150.png';
+import liftingView5 from '@assets/lifting_gallery_3_clean_clear_1788515384166.png';
 
 const queryClient = new QueryClient();
 const whatsappBase = 'https://wa.me/923122229849';
@@ -106,7 +110,7 @@ const products: Product[] = [
       'Portable Indoor Electric Lifting Equipment for Construction Material Lift to Take 100kgs From Ground',
     price: 'PKR 220,000',
     image: liftingImage,
-    images: [liftingImage],
+    images: [liftingImage, liftingView2, liftingView3, liftingView4, liftingView5],
     imagePosition: 'center',
     summary:
       'Portable electric lifting equipment made for moving up to 100 kg of material safely between ground and working levels.',
