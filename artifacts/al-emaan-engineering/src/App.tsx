@@ -34,6 +34,9 @@ import screwPumpView4 from '@assets/20260904_142302_1788514240456.png';
 import screwPumpView5 from '@assets/20260904_142348_1788514240474.jpg';
 import screwPumpView6 from '@assets/machine_view_3_clear_1788514240492.png';
 import screwPumpView7 from '@assets/20260904_142333_1788514240511.png';
+import formworkView2 from '@assets/al_emaan_formwork_gallery_2_clean_clear_1788514756778.png';
+import formworkView3 from '@assets/al_emaan_formwork_application_4_clean_clear_1788514766702.png';
+import formworkView4 from '@assets/al_emaan_formwork_application_5_clean_clear_1788514766780.png';
 
 const queryClient = new QueryClient();
 const whatsappBase = 'https://wa.me/923122229849';
@@ -87,7 +90,7 @@ const products: Product[] = [
       'Plastic Formwork Reusable PVC PP Formwork High Strength Adjustable Size Formwork Panel for Concrete',
     price: 'PKR 3,500',
     image: formworkImage,
-    images: [formworkImage],
+    images: [formworkImage, formworkView2, formworkView3, formworkView4],
     imagePosition: 'center',
     summary:
       'Reusable, adjustable panels that bring a clean, repeatable edge to concrete work without the weight of traditional systems.',
