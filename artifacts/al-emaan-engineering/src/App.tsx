@@ -189,7 +189,7 @@ function ProductGallery({
           style={{ transform: `translate3d(-${activeIndex * 100}%, 0, 0)` }}
         >
           {images.map((image, index) => (
-            <div key={image} className="h-full min-w-full flex-none">
+            <div key={image} className="h-full w-full shrink-0">
               <img
                 src={image}
                 alt={`${alt} view ${index + 1} of ${images.length}`}
