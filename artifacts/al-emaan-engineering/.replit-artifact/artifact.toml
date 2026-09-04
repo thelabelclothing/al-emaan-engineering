@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Al Emaan Engineering"
+description = "A premium one-page website for Al Emaan Engineering, showcasing construction equipment and building solutions with direct WhatsApp inquiry flows."
+version = "1.0.0"
+id = "artifacts/al-emaan-engineering"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25707
+
+[services.development]
+run = "pnpm --filter @workspace/al-emaan-engineering run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/al-emaan-engineering", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/al-emaan-engineering/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25707"
+BASE_PATH = "/"
