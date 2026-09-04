@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowRight,
@@ -24,9 +24,16 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
+import { SiWhatsapp } from 'react-icons/si';
 import screwPumpImage from '@assets/al_emaan_screw_pump_clean_enhanced_1788512606174.jpg';
 import formworkImage from '@assets/al_emaan_formwork_clean_enhanced_1788512606227.jpg';
 import liftingImage from '@assets/al_emaan_lifting_equipment_enhanced_1788512606254.jpg';
+import screwPumpView2 from '@assets/machine_view_2_clear_1788514240368.png';
+import screwPumpView3 from '@assets/20260904_142320_1788514240434.png';
+import screwPumpView4 from '@assets/20260904_142302_1788514240456.png';
+import screwPumpView5 from '@assets/20260904_142348_1788514240474.jpg';
+import screwPumpView6 from '@assets/machine_view_3_clear_1788514240492.png';
+import screwPumpView7 from '@assets/20260904_142333_1788514240511.png';
 
 const queryClient = new QueryClient();
 const whatsappBase = 'https://wa.me/923122229849';
@@ -40,6 +47,7 @@ type Product = {
   title: string;
   price: string;
   image: string;
+  images: string[];
   imagePosition: string;
   summary: string;
   specs: string[];
@@ -55,6 +63,15 @@ const products: Product[] = [
       'High Quality Small Secondary Structure Feeding Machine for Concrete Delivery Screw Pump on Construction Site',
     price: 'PKR 250,000',
     image: screwPumpImage,
+    images: [
+      screwPumpImage,
+      screwPumpView2,
+      screwPumpView3,
+      screwPumpView4,
+      screwPumpView5,
+      screwPumpView6,
+      screwPumpView7,
+    ],
     imagePosition: 'center',
     summary:
       'A compact, workshop-ready feeding solution for controlled concrete delivery on secondary structures and active sites.',
@@ -70,6 +87,7 @@ const products: Product[] = [
       'Plastic Formwork Reusable PVC PP Formwork High Strength Adjustable Size Formwork Panel for Concrete',
     price: 'PKR 3,500',
     image: formworkImage,
+    images: [formworkImage],
     imagePosition: 'center',
     summary:
       'Reusable, adjustable panels that bring a clean, repeatable edge to concrete work without the weight of traditional systems.',
@@ -85,6 +103,7 @@ const products: Product[] = [
       'Portable Indoor Electric Lifting Equipment for Construction Material Lift to Take 100kgs From Ground',
     price: 'PKR 220,000',
     image: liftingImage,
+    images: [liftingImage],
     imagePosition: 'center',
     summary:
       'Portable electric lifting equipment made for moving up to 100 kg of material safely between ground and working levels.',
@@ -115,6 +134,95 @@ function WhatsAppLink({
     >
       {children}
     </a>
+  );
+}
+
+function ProductGallery({
+  images,
+  alt,
+  imagePosition,
+  testIdPrefix,
+  className = '',
+}: {
+  images: string[];
+  alt: string;
+  imagePosition: string;
+  testIdPrefix: string;
+  className?: string;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const goToImage = (nextIndex: number) => {
+    const index = (nextIndex + images.length) % images.length;
+    scrollerRef.current?.scrollTo({
+      left: index * (scrollerRef.current.clientWidth || 1),
+      behavior: 'smooth',
+    });
+    setActiveIndex(index);
+  };
+
+  return (
+    <div className={`product-gallery relative overflow-hidden bg-[#d8d4c9] ${className}`}>
+      <div
+        ref={scrollerRef}
+        className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        onScroll={(event) => {
+          const element = event.currentTarget;
+          const nextIndex = Math.round(element.scrollLeft / (element.clientWidth || 1));
+          setActiveIndex(Math.min(images.length - 1, Math.max(0, nextIndex)));
+        }}
+        aria-label={`${alt} image gallery`}
+      >
+        {images.map((image, index) => (
+          <div key={image} className="h-full min-w-full snap-center">
+            <img
+              src={image}
+              alt={`${alt} view ${index + 1} of ${images.length}`}
+              className="h-full w-full object-cover"
+              style={{ objectPosition: imagePosition }}
+              loading={index === 0 ? undefined : 'lazy'}
+              data-testid={`${testIdPrefix}-${index + 1}`}
+            />
+          </div>
+        ))}
+      </div>
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() => goToImage(activeIndex - 1)}
+            className="absolute left-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center border border-white/70 bg-[#13232c]/75 text-white transition-colors hover:bg-[#f06423] md:flex"
+            aria-label="Previous product image"
+            data-testid={`${testIdPrefix}-previous`}
+          >
+            <ChevronUp className="-rotate-90" size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => goToImage(activeIndex + 1)}
+            className="absolute right-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center border border-white/70 bg-[#13232c]/75 text-white transition-colors hover:bg-[#f06423] md:flex"
+            aria-label="Next product image"
+            data-testid={`${testIdPrefix}-next`}
+          >
+            <ChevronUp className="rotate-90" size={18} />
+          </button>
+          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-[#13232c]/70 px-2.5 py-1.5" aria-label={`Image ${activeIndex + 1} of ${images.length}`}>
+            {images.map((image, index) => (
+              <button
+                key={`${image}-dot`}
+                type="button"
+                onClick={() => goToImage(index)}
+                className={`h-1.5 rounded-full transition-all ${index === activeIndex ? 'w-4 bg-[#e6ff45]' : 'w-1.5 bg-white/70 hover:bg-white'}`}
+                aria-label={`View image ${index + 1}`}
+                aria-current={index === activeIndex ? 'true' : undefined}
+                data-testid={`${testIdPrefix}-dot-${index + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -158,15 +266,13 @@ function ProductModal({
         >
           <X size={20} />
         </button>
-        <div className="min-h-[270px] overflow-hidden bg-[#d8d4c9]">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="h-full min-h-[270px] w-full object-cover"
-            style={{ objectPosition: product.imagePosition }}
-            data-testid={`img-detail-${product.id}`}
-          />
-        </div>
+        <ProductGallery
+          images={product.images}
+          alt={product.title}
+          imagePosition={product.imagePosition}
+          testIdPrefix={`img-detail-${product.id}`}
+          className="min-h-[270px]"
+        />
         <div className="flex flex-col justify-center p-7 sm:p-11">
           <p className="mb-4 font-mono text-[11px] font-bold uppercase tracking-[.2em] text-[#f06423]">
             Product {product.index} / {product.eyebrow}
@@ -298,13 +404,12 @@ function ProductCard({ product, onDetails }: { product: Product; onDetails: (pro
   return (
     <article className="product-card group flex flex-col border border-[#13232c]/15 bg-[#f3f0e7]" data-testid={`card-product-${product.id}`}>
       <div className="relative aspect-[1.08] overflow-hidden bg-[#d8d4c9]">
-        <img
-          src={product.image}
+        <ProductGallery
+          images={product.images}
           alt={product.title}
-          className="h-full w-full object-cover"
-          style={{ objectPosition: product.imagePosition }}
-          loading="lazy"
-          data-testid={`img-product-${product.id}`}
+          imagePosition={product.imagePosition}
+          testIdPrefix={`img-product-${product.id}`}
+          className="h-full w-full"
         />
         <span className="absolute left-4 top-4 bg-[#e6ff45] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[.12em] text-[#13232c]">
           {product.index} / {product.eyebrow}
@@ -535,7 +640,7 @@ function Home() {
       </footer>
 
       <WhatsAppLink message={whatsappGeneralMessage} testId="link-floating-whatsapp" className="whatsapp-pulse fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-[#13232c] shadow-[0_8px_20px_hsl(197_29%_15%_/_0.22)] transition-transform hover:scale-105 sm:bottom-7 sm:right-7" aria-label="Chat with Al Emaan Engineering on WhatsApp">
-        <MessageCircle size={25} strokeWidth={2.2} />
+        <SiWhatsapp size={27} className="text-white" aria-hidden="true" />
       </WhatsAppLink>
 
       {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
