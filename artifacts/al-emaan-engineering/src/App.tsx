@@ -28,7 +28,6 @@ import { SiWhatsapp } from 'react-icons/si';
 import screwPumpImage from '@assets/al_emaan_screw_pump_clean_enhanced_1788512606174.jpg';
 import formworkImage from '@assets/al_emaan_formwork_clean_enhanced_1788512606227.jpg';
 import liftingImage from '@assets/al_emaan_lifting_equipment_enhanced_1788512606254.jpg';
-import screwPumpView2 from '@assets/machine_view_2_clear_1788514240368.png';
 import screwPumpView3 from '@assets/20260904_142320_1788514240434.png';
 import screwPumpView4 from '@assets/20260904_142302_1788514240456.png';
 import screwPumpView5 from '@assets/20260904_142348_1788514240474.jpg';
@@ -72,7 +71,6 @@ const products: Product[] = [
     image: screwPumpImage,
     images: [
       screwPumpImage,
-      screwPumpView2,
       screwPumpView3,
       screwPumpView4,
       screwPumpView5,
@@ -157,42 +155,52 @@ function ProductGallery({
   testIdPrefix: string;
   className?: string;
 }) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const goToImage = (nextIndex: number) => {
     const index = (nextIndex + images.length) % images.length;
-    scrollerRef.current?.scrollTo({
-      left: index * (scrollerRef.current.clientWidth || 1),
-      behavior: 'smooth',
-    });
     setActiveIndex(index);
   };
 
   return (
     <div className={`product-gallery relative overflow-hidden bg-[#d8d4c9] ${className}`}>
       <div
-        ref={scrollerRef}
-        className="flex h-full w-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        onScroll={(event) => {
-          const element = event.currentTarget;
-          const nextIndex = Math.round(element.scrollLeft / (element.clientWidth || 1));
-          setActiveIndex(Math.min(images.length - 1, Math.max(0, nextIndex)));
+        className="h-full w-full touch-pan-y"
+        onTouchStart={(event) => {
+          touchStartX.current = event.changedTouches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(event) => {
+          const startX = touchStartX.current;
+          const endX = event.changedTouches[0]?.clientX;
+          touchStartX.current = null;
+          if (startX === null || endX === undefined) return;
+          const distance = endX - startX;
+          if (Math.abs(distance) < 40) return;
+          goToImage(activeIndex + (distance < 0 ? 1 : -1));
+        }}
+        onTouchCancel={() => {
+          touchStartX.current = null;
         }}
         aria-label={`${alt} image gallery`}
       >
-        {images.map((image, index) => (
-          <div key={image} className="h-full min-w-full snap-center">
-            <img
-              src={image}
-              alt={`${alt} view ${index + 1} of ${images.length}`}
-              className="h-full w-full object-cover"
-              style={{ objectPosition: imagePosition }}
-              loading={index === 0 ? undefined : 'lazy'}
-              data-testid={`${testIdPrefix}-${index + 1}`}
-            />
-          </div>
-        ))}
+        <div
+          className="flex h-full w-full transition-transform duration-500 ease-out"
+          style={{ transform: `translate3d(-${activeIndex * 100}%, 0, 0)` }}
+        >
+          {images.map((image, index) => (
+            <div key={image} className="h-full min-w-full flex-none">
+              <img
+                src={image}
+                alt={`${alt} view ${index + 1} of ${images.length}`}
+                className="h-full w-full object-cover"
+                style={{ objectPosition: imagePosition }}
+                loading={index === 0 ? undefined : 'lazy'}
+                data-testid={`${testIdPrefix}-${index + 1}`}
+              />
+            </div>
+          ))}
+        </div>
       </div>
       {images.length > 1 && (
         <>
